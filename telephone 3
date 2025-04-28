@@ -1,0 +1,160 @@
+#include <iostream>
+using namespace std;
+
+#define max 10
+
+// Node for Chaining
+struct node {
+    long int mn;
+    node* next;
+};
+
+// Hash table with Chaining
+class telephone_chaining {
+    node* arr[max];
+public:
+    telephone_chaining() {
+        for (int i = 0; i < max; i++)
+            arr[i] = NULL;
+    }
+    
+    int hashfunction(long int n) {
+        return n % max;
+    }
+
+    void insert(long int num) {
+        int ind = hashfunction(num);
+        node* nn = new node;
+        nn->mn = num;
+        nn->next = NULL;
+        
+        if (arr[ind] == NULL) {
+            arr[ind] = nn;
+        } else {
+            node* temp = arr[ind];
+            while (temp->next != NULL)
+                temp = temp->next;
+            temp->next = nn;
+        }
+    }
+
+    int search(long int num) {
+        int comparisons = 0;
+        int ind = hashfunction(num);
+        node* temp = arr[ind];
+        while (temp != NULL) {
+            comparisons++;
+            if (temp->mn == num)
+                return comparisons;
+            temp = temp->next;
+        }
+        return comparisons; // not found
+    }
+
+    void display() {
+        cout << "Hash Table using Chaining:\n";
+        for (int i = 0; i < max; i++) {
+            node* temp = arr[i];
+            cout << i << ": ";
+            while (temp != NULL) {
+                cout << temp->mn << " -> ";
+                temp = temp->next;
+            }
+            cout << "NULL\n";
+        }
+    }
+};
+
+// Hash table with Linear Probing
+class telephone_linearprobing {
+    long int arr[max];
+public:
+    telephone_linearprobing() {
+        for (int i = 0; i < max; i++)
+            arr[i] = -1; // -1 means empty
+    }
+
+    int hashfunction(long int n) {
+        return n % max;
+    }
+
+    void insert(long int num) {
+        int ind = hashfunction(num);
+        int i = 0;
+        while (arr[(ind + i) % max] != -1 && i < max) {
+            i++;
+        }
+        if (i < max) {
+            arr[(ind + i) % max] = num;
+        } else {
+            cout << "Hash Table Full! Cannot insert " << num << endl;
+        }
+    }
+
+    int search(long int num) {
+        int comparisons = 0;
+        int ind = hashfunction(num);
+        int i = 0;
+        while (arr[(ind + i) % max] != -1 && i < max) {
+            comparisons++;
+            if (arr[(ind + i) % max] == num)
+                return comparisons;
+            i++;
+        }
+        return comparisons; // not found
+    }
+
+    void display() {
+        cout << "Hash Table using Linear Probing:\n";
+        for (int i = 0; i < max; i++) {
+            cout << i << ": ";
+            if (arr[i] != -1)
+                cout << arr[i];
+            else
+                cout << "Empty";
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    telephone_chaining t1;
+    telephone_linearprobing t2;
+    
+    int ch, ans;
+    long int num;
+    
+    do {
+        cout << "\nMENU:\n1. Insert\n2. Display\n3. Search and Compare\nEnter choice: ";
+        cin >> ch;
+        switch (ch) {
+            case 1:
+                cout << "Enter telephone number: ";
+                cin >> num;
+                t1.insert(num);
+                t2.insert(num);
+                break;
+            case 2:
+                t1.display();
+                t2.display();
+                break;
+            case 3:
+                cout << "Enter number to search: ";
+                cin >> num;
+                {
+                    int comparisons1 = t1.search(num);
+                    int comparisons2 = t2.search(num);
+                    
+                    cout << "Comparisons in Chaining: " << comparisons1 << endl;
+                    cout << "Comparisons in Linear Probing: " << comparisons2 << endl;
+                }
+                break;
+            default:
+                cout << "Invalid choice.\n";
+        }
+        cout << "Do you want to continue (1/0)? ";
+        cin >> ans;
+    } while (ans == 1);
+    
+    return 0;
+}
